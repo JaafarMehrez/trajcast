@@ -5,7 +5,12 @@ import ase
 from ase.calculators.lammps import convert
 from ase.io import lammpsrun
 
-from trajcast.data._keys import FORCES_KEY, TOTAL_ENERGY_KEY, VELOCITIES_KEY
+from trajcast.data._keys import (
+    FORCES_KEY,
+    TIMESTEP_KEY,
+    TOTAL_ENERGY_KEY,
+    VELOCITIES_KEY,
+)
 from trajcast.utils.misc import string2index
 
 
@@ -84,7 +89,10 @@ def lammps_dump_to_ase_atoms(
 
         # we also wrap everything into the box:
         obj.wrap()
-
+        
+        # for now drop the timestep from lammps which just enumerates
+        if obj.info.get(TIMESTEP_KEY) is not None:
+            obj.info.pop(TIMESTEP_KEY)
     # now go back to ASEObject if just one frame
     data = data[0] if len(data) == 1 else data
 

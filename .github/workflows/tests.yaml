@@ -1,0 +1,75 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests-base:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python_version: ["3.11", "3.12"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install uv and create environment
+        run: |
+          pip install uv
+          uv venv venv
+
+      - name: Install related packages
+        run: |
+          source venv/bin/activate
+          uv pip install torch==2.5.1
+          uv pip install torch_scatter torch_cluster -f https://data.pyg.org/whl/torch-2.5.1+cpu.html
+          uv pip install .[cueq]
+
+      - name: Install coverage
+        run: |
+          source venv/bin/activate 
+          uv pip install coverage
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
+      - name: Run tests with unittest
+        run: |
+          source venv/bin/activate
+          cd $GITHUB_WORKSPACE
+          coverage run --source=trajcast -m unittest discover  -s  tests -p "test_*.py"
+          coverage xml
+
+      - name: Generate coverage report
+        run: |
+          source venv/bin/activate 
+          coverage report -m  # Show the coverage in the terminal
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
