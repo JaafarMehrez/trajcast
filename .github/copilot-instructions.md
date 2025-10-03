@@ -1,9 +1,11 @@
-# Copilot Instructions for TrajCast
-
 ## Project Overview
+
 TrajCast is a framework for generating molecular dynamics (MD) trajectories using autoregressive equivariant message-passing neural networks (MPNNs). It predicts atomic displacements and velocities, rolling out trajectories without explicit force calculations.
 
 ## Architecture & Key Components
+
+1
+
 - **Core package:** `trajcast/` contains main modules:
   - `model/`: Model definitions, training, forecasting, losses, checkpointing, and utilities.
   - `nn/`: Neural network layers, encoding, message passing, non-linearity, normalization, tensor interactions.
@@ -15,6 +17,7 @@ TrajCast is a framework for generating molecular dynamics (MD) trajectories usin
 - **Examples:** Jupyter notebooks for training (`examples/training/training.ipynb`) and inference (`examples/inference/forecasting.ipynb`).
 
 ## Developer Workflows
+
 - **Installation:**
   - Use `pip install .` for basic setup.
   - For CUDA, install with `pip install .[cueq]` after installing compatible PyTorch and dependencies.
@@ -30,6 +33,7 @@ TrajCast is a framework for generating molecular dynamics (MD) trajectories usin
   - Example datasets and model weights are hosted on HuggingFace (see README for links).
 
 ## Project-Specific Patterns & Conventions
+
 - **Autoregressive rollout:** Model outputs (positions, velocities) are fed as inputs for the next step.
 - **Momentum conservation:** Displacements and velocities are post-processed to enforce physical constraints.
 - **Message passing:** Neural network blocks use radial basis and spherical harmonics for edge features.
@@ -38,6 +42,7 @@ TrajCast is a framework for generating molecular dynamics (MD) trajectories usin
 - **Notebooks:** Use provided notebooks for reproducible experiments and workflow demos.
 
 ## Integration Points
+
 - **External dependencies:**
   - PyTorch (2.5.1), torch_scatter, torch_cluster
   - Optional: cuEquivariance for CUDA acceleration
@@ -46,6 +51,7 @@ TrajCast is a framework for generating molecular dynamics (MD) trajectories usin
   - Wrappers in `trajcast/data/wrappers/`
 
 ## Example Commands
+
 ```sh
 # Install dependencies (CPU)
 pip install torch==2.5.1
@@ -57,6 +63,7 @@ pytest
 ```
 
 ## References
+
 - [README.md](../README.md) for architecture, installation, and usage
 - [examples/](../examples/) for training/inference workflows
 - [tests/unit/](../tests/unit/) for test patterns and data
@@ -64,4 +71,4 @@ pytest
 
 ---
 
-*Update this file as project conventions evolve. For questions, see README or contact maintainers.*
+_Update this file as project conventions evolve. For questions, see README or contact maintainers._
