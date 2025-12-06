@@ -1,0 +1,102 @@
+model:
+  precision: 32
+  num_chem_elements: 4
+  edge_cutoff: 4.0
+  num_edge_rbf: 8
+  num_edge_poly_cutoff: 6
+  vel_max: 0.11
+  num_vel_rbf: 8
+  max_rotation_order: 1
+  num_hidden_channels: 16
+  num_mp_layers: 3
+  edge_mlp_kwargs:
+    n_neurons:
+    - 16
+    - 16
+    - 16
+    activation: silu
+  vel_mlp_kwargs:
+    n_neurons:
+    - 16
+    - 16
+    - 16
+    activation: silu
+  nl_gate_kwargs:
+    activation_scalars:
+      o: tanh
+      e: silu
+    activation_gates:
+      e: silu
+  conserve_ang_mom: true
+  o3_backend: e3nn
+  net_lin_mom:
+  - 0.0
+  - 0.0
+  - 0.0
+  net_ang_mom:
+  - 0.0
+  - 0.0
+  - 0.0
+  avg_num_neighbors: 10.505999565124512
+data:
+  root: .
+  name: paracetamol_training
+  cutoff_radius: 4.0
+  files:
+  - ../data/example/train.extxyz
+  rename: true
+  atom_type_mapper:
+    1: 0
+    6: 1
+    7: 2
+    8: 3
+training:
+  seed: 1705
+  model_type: EfficientTrajCastModel
+  device: cpu
+  restart_latest: false
+  target_field: target
+  reference_fields:
+  - displacements
+  - update_velocities
+  batch_size: 10
+  max_grad_norm: 0.5
+  num_epochs: 10
+  criterion:
+    loss_type:
+      main_loss: mse
+    learnable_weights: false
+    dimensions:
+    - 3
+    - 3
+  optimizer: adam
+  optimizer_settings:
+    lr: 0.01
+    amsgrad: true
+  scheduler:
+  - ReduceLROnPlateau
+  scheduler_settings:
+    ReduceLROnPlateau:
+      factor: 0.8
+      patience: 25
+      min_lr: 0.0001
+  chained_scheduler_hp:
+    milestones: []
+    per_epoch: true
+    monitor_lr_scheduler: false
+  tensorboard_settings:
+    loss: true
+    lr: true
+    loss_validation:
+      data:
+        root: .
+        name: paracetamol_validation
+        cutoff_radius: 4.0
+        files:
+        - ../data/example/val.extxyz
+        rename: true
+        atom_type_mapper:
+          1: 0
+          6: 1
+          7: 2
+          8: 3
